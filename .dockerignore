@@ -1,0 +1,6 @@
+.git
+.vscode
+venv*
+conf.py
+LICENSE
+README.rst

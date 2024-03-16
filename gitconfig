@@ -1,0 +1,12 @@
+[core]
+    # keep input as is, disable line end conv
+    autocrlf = input
+    # abort when mixed line end found
+    safecrlf = true
+
+[init]
+    # avoid cultural sensitivity
+    defaultBranch = main
+
+[alias]
+    logs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%Creset %C(bold blue)%cN%C(dim blue)<%cE>%Creset' --abbrev-commit --date=iso-strict
