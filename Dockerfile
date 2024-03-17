@@ -1,10 +1,14 @@
 FROM alpine:3.19.1
 
+ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
+
 # Install OpenSSH server and Gitolite
 # Unlock the automatically-created git user
 # Disable sftp subsystem
 RUN set -x \
+    && [ 'https://dl-cdn.alpinelinux.org' = "${APK_MIRROR}" ] || sed -i "s!https://dl-cdn.alpinelinux.org!${APK_MIRROR}!g" /etc/apk/repositories \
     && apk add --no-cache gitolite openssh \
+    && [ 'https://dl-cdn.alpinelinux.org' = "${APK_MIRROR}" ] || sed -i "s!${APK_MIRROR}!https://dl-cdn.alpinelinux.org!g" /etc/apk/repositories \
     && echo "git:*" | chpasswd -e \
     && perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config
 
