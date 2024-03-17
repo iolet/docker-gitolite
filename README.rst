@@ -23,6 +23,7 @@ Quick setup
 
        docker run \
            --name gitolite \
+           --env ADMIN_KEY="$(cat ~/admin-keys@gitolite.pub)" \
            --mount type=volume,source=gitolite-keys,target=/etc/ssh/keys \
            --mount type=volume,source=gitolite-home,target=/var/lib/git \
            --publish 2222:22/tcp \
@@ -36,7 +37,9 @@ Build image
 
 .. code:: bash
 
-    docker build --tag liding/gitolite:latest .
+    docker build \
+        --build-arg APK_MIRROR=https://ap.edge.kernel.org \
+        --tag liding/gitolite:latest .
 
 FAQ
 -----

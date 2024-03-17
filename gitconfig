@@ -5,8 +5,8 @@
     safecrlf = true
 
 [init]
-    # avoid cultural sensitivity
-    defaultBranch = main
+    # suppress warning for default branch change
+    defaultBranch = master
 
 [alias]
     logs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%Creset %C(bold blue)%cN%C(dim blue)<%cE>%Creset' --abbrev-commit --date=iso-strict
