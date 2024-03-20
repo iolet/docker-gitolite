@@ -47,4 +47,11 @@ FAQ
 #. When use podman to run, please add exec option to volume mount,
    otherwrise the repo hooks will not work
 
-You can then add users and repos by following the `official guide <https://github.com/sitaramc/gitolite#adding-users-and-repos>`_.
+   You can then add users and repos by following
+   the `official guide <https://github.com/sitaramc/gitolite#adding-users-and-repos>`_.
+
+#. Why i added new repo in gitolite-admin and pushed, server does not create
+   any bare repos in repositories directory.
+
+   Please migrated you commits to master branch, gitolite only handle master
+   branch changes, other branches does not any effect.
