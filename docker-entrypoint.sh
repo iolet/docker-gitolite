@@ -29,10 +29,8 @@ fi
 if [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ] && [ "${1}" = "/usr/sbin/sshd" ]; then
     echo "Initialling gitolite with public key [${ADMIN_KEY}]..."
     echo "$ADMIN_KEY" | tr -d "\n" > "/tmp/admin.pub"
-    perl -i -pe 's/^(\s*defaultBranch\s*=\s*)main/\1master/' /etc/gitconfig
     su - git -c "gitolite setup --pubkey /tmp/admin.pub"
     rm "/tmp/admin.pub"
-    perl -i -pe 's/^(\s*defaultBranch\s*=\s*)master/\1main/' /etc/gitconfig
 fi
 
 # Clean temp variables
