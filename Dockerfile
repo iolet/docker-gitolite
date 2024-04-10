@@ -15,7 +15,7 @@ RUN set -x \
 # Copy nessary files
 COPY 10_gitolite.conf 20_hostkeys.conf /etc/ssh/sshd_config.d/
 COPY gitconfig /etc/
-COPY docker-entrypoint.sh /
+COPY docker-entrypoint.sh /usr/local/bin
 
 # Volume used to store SSH host keys, generated on first run
 VOLUME /etc/ssh/keys
@@ -27,7 +27,7 @@ VOLUME /var/lib/git
 EXPOSE 22/tcp
 
 # Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Default command is to run the SSH server
 CMD ["/usr/sbin/sshd", "-D", "-e"]
