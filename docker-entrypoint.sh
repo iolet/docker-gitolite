@@ -28,7 +28,7 @@ auth_keys=~git/.ssh/authorized_keys
 if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ ! -n "$ADMIN_KEY" ]; then
     echo "You need to specify ADMIN_KEY on first run to setup gitolite"
     echo 'Examples:'
-    echo '    docker run --env ADMIN_KEY="$(cat ~/.ssh/id_rsa.pub)" jgiannuzzi/gitolite'
+    echo '    docker run --env ADMIN_KEY="$(cat ~/.ssh/id_rsa.pub)" iolet/gitolite'
     exit 1
 fi
 if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
