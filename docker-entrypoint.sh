@@ -28,9 +28,9 @@ if [ ! -f "$auth_keys" ] && [ ! -n "$ADMIN_KEY" ] && [ "${1}" = "/usr/sbin/sshd"
 fi
 if [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ] && [ "${1}" = "/usr/sbin/sshd" ]; then
     echo "Initialling gitolite with public key [${ADMIN_KEY}]..."
-    echo "$ADMIN_KEY" | tr -d "\n" > "/tmp/admin.pub"
-    su - git -c "gitolite setup --pubkey /tmp/admin.pub"
-    rm "/tmp/admin.pub"
+    echo "$ADMIN_KEY" | tr -d "\n" > "/dev/shm/admin.pub"
+    su - git -c "gitolite setup --pubkey /dev/shm/admin.pub"
+    rm "/dev/shm/admin.pub"
 fi
 
 # Clean temp variables
