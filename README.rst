@@ -21,7 +21,8 @@ Quick setup
 
        docker run \
            --name gitolite \
-           --env ADMIN_KEY="$(cat ~/admin@gitolite.pub)" \
+           --env ADMIN_KEY="$(cat ./admin@gitolite.pub)" \
+           --env HOSTD_KEY="$(cat ./ssh_host_ed25519_key)" \
            --mount type=volume,source=gitolite-keys,target=/etc/ssh/keys \
            --mount type=volume,source=gitolite-home,target=/var/lib/git \
            --publish 2222:22/tcp \

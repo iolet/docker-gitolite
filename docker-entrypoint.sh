@@ -7,19 +7,29 @@ else
     is_sshd=0
 fi
 
-# Setup SSH daemon
+# Setup ssh host key dirs
 keys_dir=/etc/ssh/keys
 if [ $is_sshd -eq 1 ] && [ ! -d "$keys_dir" ]; then
     mkdir "$keys_dir"
 fi
+
+# Setup ssh host key
 key_file="${keys_dir}/ssh_host_ed25519_key"
-if [ $is_sshd -eq 1 ] && [ ! -f "$key_file" ]; then
-    echo "Generating SSH host key $key_file..."
+if [ $is_sshd -eq 1 ] && [ ! -f "$key_file" ] && [ ! -n "$HOSTD_KEY" ]; then
+    echo "Generating ssh host ed25519 key..."
     ssh-keygen -q -N '' -f "$key_file" -t ed25519
 fi
+if [ $is_sshd -eq 1 ] && [ ! -f "$key_file" ] && [ -n "$HOSTD_KEY" ]; then
+    echo "Installing ssh host ed25519 key..."
+    echo "$HOSTD_KEY" > "$key_file"
+    chmod 600 "$key_file"
+    ssh-keygen -y -f "$key_file" > "${key_file}.pub"
+fi
+
+# Enable ssh host key
 con_file=/etc/ssh/sshd_config.d/20_hostkeys.conf
 if [ $is_sshd -eq 1 ] && ! grep -q "HostKey $key_file" "${con_file}"; then
-    echo "Adding SSH host key $key_file..."
+    echo "Appending ssh host ed25519 key..."
     echo "HostKey $key_file" >> "${con_file}"
 fi
 
