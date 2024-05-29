@@ -23,7 +23,7 @@ Quick setup
 
        podman run \
            --name gitolite \
-           --env "[ADMIN_KEY=${ADMIN_KEY}]" \
+           --env "ADMIN_KEY=${ADMIN_KEY}" \
            --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keys,rw=true \
            --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
            --publish 2222:22/tcp \
