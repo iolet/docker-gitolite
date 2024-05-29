@@ -1,4 +1,4 @@
-FROM alpine:3.19.1
+FROM docker.io/library/alpine:3.19.1
 
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
 
