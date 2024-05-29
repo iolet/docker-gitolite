@@ -33,12 +33,18 @@ if [ $is_sshd -eq 1 ] && ! grep -q "HostKey $key_file" "${con_file}"; then
     echo "HostKey $key_file" >> "${con_file}"
 fi
 
+# Fix volume permission at every sshd startup
+if [ $is_sshd -eq 1 ]; then
+    echo "Fixing gitolite data permissions..."
+    chown -R git:git ~git
+fi
+
 # Setup gitolite admin
 auth_keys=~git/.ssh/authorized_keys
 if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ ! -n "$ADMIN_KEY" ]; then
     echo "You need to specify ADMIN_KEY on first run to setup gitolite"
-    echo 'Examples:'
-    echo '    docker run --env ADMIN_KEY="$(cat ~/.ssh/id_rsa.pub)" iolet/gitolite'
+    echo "Examples:"
+    echo "    podman run --env ADMIN_KEY="$(cat ~/.ssh/id_ed25519.pub)" <REGISTRY>/iolet/gitolite"
     exit 1
 fi
 if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
@@ -48,12 +54,10 @@ if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
     rm "/dev/shm/admin.pub"
 fi
 
-# Check setup and fix permissions at every sshd startup
+# Check setup at every sshd startup
 if [ $is_sshd -eq 1 ]; then
     echo "Checking gitolite initialization..."
     su - git -c "gitolite setup"
-    echo "Fixing gitolite data permissions..."
-    chown -R git:git ~git
 fi
 
 # Clean temp variables
