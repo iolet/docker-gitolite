@@ -42,7 +42,7 @@ Build image
 
     podman build \
         --build-arg "APK_MIRROR=${APK}" \
-        --tag "ioloet/gitolite:${TAG}" \
+        --tag "iolet/gitolite:${TAG}" \
         .
 
 FAQ
