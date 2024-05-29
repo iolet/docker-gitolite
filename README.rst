@@ -1,4 +1,4 @@
-Docker image for Gitolite
+Container image for Gitolite
 =========================
 
 This project is based on `jgiannuzzi/docker-gitolite <https://github.com/jgiannuzzi/docker-gitolite>`_
@@ -11,24 +11,25 @@ Quick setup
 
    .. code:: bash
 
-       docker volume create --name gitolite-keys
-       docker volume create --name gitolite-home
+       podman volume create gitolite-keys
+       podman volume create gitolite-home
 
 
 #. Start your Gitolite container with admin SSH public key
 
    .. code:: bash
 
-       docker run \
+       ADMIN_KEY=$(cat ./id_ed25519.pub)
+
+       podman run \
            --name gitolite \
-           --env ADMIN_KEY="$(cat ./admin@gitolite.pub)" \
-           --env HOSTD_KEY="$(cat ./ssh_host_ed25519_key)" \
-           --mount type=volume,source=gitolite-keys,target=/etc/ssh/keys \
-           --mount type=volume,source=gitolite-home,target=/var/lib/git \
+           --env "[ADMIN_KEY=${ADMIN_KEY}]" \
+           --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keys,rw=true \
+           --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
            --publish 2222:22/tcp \
-           --restart unless-stopped \
+           --restart on-failure:3 \
            --detach \
-           iolet/gitolite:latest
+           iolet/gitolite
 
 
 Build image
@@ -39,9 +40,10 @@ Build image
     APK=https://ap.edge.kernel.org
     TAG=1.0-alpine3.19.1
 
-    docker build \
+    podman build \
         --build-arg "APK_MIRROR=${APK}" \
-        --tag "ioloet/gitolite:${TAG}" .
+        --tag "ioloet/gitolite:${TAG}" \
+        .
 
 FAQ
 -----
