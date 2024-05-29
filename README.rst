@@ -36,9 +36,12 @@ Build image
 
 .. code:: bash
 
+    APK=https://ap.edge.kernel.org
+    TAG=1.0-alpine3.19.1
+
     docker build \
-        --build-arg APK_MIRROR=https://ap.edge.kernel.org \
-        --tag liding/gitolite:latest .
+        --build-arg "APK_MIRROR=${APK}" \
+        --tag "ioloet/gitolite:${TAG}" .
 
 FAQ
 -----
