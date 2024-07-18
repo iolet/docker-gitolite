@@ -48,6 +48,17 @@ Build image
         --tag "iolet/gitolite:${RELEASE_TAG}-gl${GL3_VERSION}-alpine3.19.1" \
         .
 
+Transfer image
+--------------
+
+.. code:: bash
+
+    # export image with compression
+    podman save localhost/iolet/gitolite:latest | zstd - > iolet_gitolite_latest.tar.zst
+
+    # import images directly
+    podman load --input iolet_gitolite_latest.tar.zst
+
 FAQ
 -----
 
