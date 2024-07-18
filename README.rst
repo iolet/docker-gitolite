@@ -1,5 +1,5 @@
 Container image for Gitolite
-=========================
+=============================
 
 This project is based on `jgiannuzzi/docker-gitolite <https://github.com/jgiannuzzi/docker-gitolite>`_
 and enhanced security.
@@ -37,12 +37,15 @@ Build image
 
 .. code:: bash
 
-    APK=https://ap.edge.kernel.org
-    TAG=1.0-alpine3.19.1
+    RELEASE_TAG=2.0
+
+    GL3_VERSION=3.6.13
+    REPO_PREFIX=https://mirror.lzu.edu.cn
 
     podman build \
-        --build-arg "APK_MIRROR=${APK}" \
-        --tag "iolet/gitolite:${TAG}" \
+        --build-arg "GL3_VERSION=${GL3_VERSION}" \
+        --build-arg "REPO_PREFIX=${REPO_PREFIX}" \
+        --tag "iolet/gitolite:${RELEASE_TAG}-gl${GL3_VERSION}-alpine3.19.1" \
         .
 
 FAQ
