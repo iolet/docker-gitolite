@@ -8,7 +8,7 @@ else
 fi
 
 # Setup ssh host key dirs
-keys_dir=/etc/ssh/key
+keys_dir=/etc/ssh/keypair.d
 if [ $is_sshd -eq 1 ] && [ ! -d "$keys_dir" ]; then
     mkdir "$keys_dir"
 fi

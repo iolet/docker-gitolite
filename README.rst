@@ -24,8 +24,8 @@ Quick setup
        podman run \
            --name gitolite \
            --env "ADMIN_KEY=${ADMIN_KEY}" \
-           --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keys,rw=true \
-           --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
+           --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
+           --mount type=volume,src=gitolite-home,dst=/var/local/lib/git,rw=true \
            --publish 2222:22/tcp \
            --restart on-failure:3 \
            --detach \
@@ -37,15 +37,17 @@ Build image
 
 .. code:: bash
 
-    RELEASE_TAG=2.0
+    RELEASE_TAG=3.0
 
-    GL3_VERSION=3.6.13
-    REPO_PREFIX=https://mirror.lzu.edu.cn
+    ALPINE_TAG=3.20.2
+    APK_MIRROR=https://mirror.lzu.edu.cn
+    GITOLITE_TAG=v3.6.13
 
     podman build \
-        --build-arg "GL3_VERSION=${GL3_VERSION}" \
-        --build-arg "REPO_PREFIX=${REPO_PREFIX}" \
-        --tag "iolet/gitolite:${RELEASE_TAG}-gl${GL3_VERSION}-alpine3.19.1" \
+        --build-arg "ALPINE_TAG=${ALPINE_TAG}" \
+        --build-arg "APK_MIRROR=${APK_MIRROR}" \
+        --build-arg "GITOLITE_TAG=${GITOLITE_TAG}" \
+        --tag "iolet/gitolite:${RELEASE_TAG}-gl$(echo $GITOLITE_TAG | tr -d 'v')-alpine${ALPINE_TAG}" \
         .
 
 Transfer image

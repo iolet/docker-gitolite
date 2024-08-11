@@ -1,27 +1,29 @@
-FROM docker.io/library/alpine:3.19.3
+ARG ALPINE_TAG
 
-# Taget gitolite version (tag)
-ARG GL3_VERSION
+FROM docker.io/library/alpine:${ALPINE_TAG}
+
+# Maybe we want mirror for package
+ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
+
+# For gitolite tag
+ARG GITOLITE_TAG
 
 # Git user and group id
 ARG GIT_GID=233
 ARG GIT_UID=233
 
-# Apk mirror
-ARG REPO_PREFIX=https://dl-cdn.alpinelinux.org
-
 # Install dependencies and tools
 RUN set -eux; \
     \
-    if [ "${REPO_PREFIX}" != "https://dl-cdn.alpinelinux.org" ]; then \
-        sed -i "s@https://dl-cdn.alpinelinux.org@${REPO_PREFIX}@g" /etc/apk/repositories; \
+    if [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+        sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
     fi; \
     \
-    apk add --no-cache curl git perl openssh-server xz; \
+    apk add --no-cache git perl openssh-server; \
     perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
     \
-    if [ "${REPO_PREFIX}" != "https://dl-cdn.alpinelinux.org" ]; then \
-        sed -i "s@${REPO_PREFIX}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
+    if [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+        sed -i "s@${APK_MIRROR}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
     fi; \
     \
     rm -rf /var/cache/apk/* /tmp/*;
@@ -29,16 +31,14 @@ RUN set -eux; \
 # Install gitolite from source
 RUN set -eux; \
     \
-    curl \
-        --progress-bar \
-        --location \
-        --output /tmp/v${GL3_VERSION}.tar.gz \
-        "https://github.com/sitaramc/gitolite/archive/refs/tags/v${GL3_VERSION}.tar.gz"; \
+    git clone https://github.com/sitaramc/gitolite.git \
+        --branch "${GITOLITE_TAG}" \
+        --depth 1 \
+        --single-branch \
+        --no-checkout; \
     \
-    tar -C /tmp -zxf /tmp/v${GL3_VERSION}.tar.gz; \
     mkdir /usr/local/lib/gitolite3; \
-    /tmp/gitolite-${GL3_VERSION}/install -to /usr/local/lib/gitolite3; \
-    echo "${GL3_VERSION}" > /usr/local/lib/gitolite3/VERSION; \
+    /tmp/gitolite/install -to /usr/local/lib/gitolite3; \
     ln -s /usr/local/lib/gitolite3/gitolite /usr/local/bin/gitolite; \
     \
     rm -rf /tmp/*;
@@ -68,10 +68,10 @@ COPY gitconfig /etc/
 COPY docker-entrypoint.sh /usr/local/bin
 
 # Volume used to store SSH host key, generated on first run
-VOLUME /etc/ssh/key
+VOLUME /etc/ssh/keypair.d
 
 # Volume used to store all Gitolite data (keys, config and repositories), initialized on first run
-VOLUME /var/lib/git
+VOLUME /var/local/lib/git
 
 # Expose port 22 to access SSH
 EXPOSE 22/tcp
