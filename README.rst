@@ -37,7 +37,7 @@ Build image
 
 .. code:: bash
 
-    RELEASE_TAG=3.0
+    RELEASE_TAG=3.0.1
 
     ALPINE_TAG=3.20.2
     APK_MIRROR=https://mirror.lzu.edu.cn
