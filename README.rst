@@ -39,12 +39,12 @@ Build image
 
     RELEASE_TAG=3.0.1
 
-    ALPINE_TAG=3.20.2
+    ALPINE_VER=3.20.2
     APK_MIRROR=https://mirror.lzu.edu.cn
     GITOLITE_TAG=v3.6.13
 
     podman build \
-        --build-arg "ALPINE_TAG=${ALPINE_TAG}" \
+        --build-arg "ALPINE_VER=${ALPINE_VER}" \
         --build-arg "APK_MIRROR=${APK_MIRROR}" \
         --build-arg "GITOLITE_TAG=${GITOLITE_TAG}" \
         --tag "iolet/gitolite:${RELEASE_TAG}-gl$(echo $GITOLITE_TAG | tr -d 'v')-alpine${ALPINE_TAG}" \

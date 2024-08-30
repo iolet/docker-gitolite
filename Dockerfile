@@ -1,6 +1,6 @@
-ARG ALPINE_TAG
+ARG ALPINE_VER
 
-FROM docker.io/library/alpine:${ALPINE_TAG}
+FROM docker.io/library/alpine:${ALPINE_VER}
 
 # Maybe we want mirror for package
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
@@ -31,8 +31,7 @@ RUN set -eux; \
 # Install gitolite from source
 RUN set -eux; \
     \
-    git clone \
-        --branch "${GITOLITE_TAG}" --depth 1 --single-branch \
+    git clone --branch "${GITOLITE_TAG}" --depth 1 --single-branch \
         https://github.com/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
