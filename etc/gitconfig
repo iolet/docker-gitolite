@@ -6,7 +6,7 @@
 
 [init]
     # suppress warning for default branch change
-    defaultBranch = master
+    defaultBranch = main
 
 [alias]
     logs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%Creset %C(bold blue)%cN%C(dim blue)<%cE>%Creset' --abbrev-commit --date=iso-strict

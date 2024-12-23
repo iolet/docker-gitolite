@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Check argument first
-if [ "/usr/sbin/sshd" = "${1}" ]; then
+if [ "/init" = "${1}" ]; then
     is_sshd=1
 else
     is_sshd=0
