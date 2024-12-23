@@ -13,12 +13,6 @@ ARG S6_OVERLAY_TAG
 ARG GIT_GID=201
 ARG GIT_UID=201
 
-# s6-log defaults
-ARG SYSLOG_UID=32760
-ARG SYSLOG_GID=32760
-ARG SYSLLOG_UID=32761
-ARG SYSLLOG_GID=32761
-
 # Install dependencies and tools
 RUN set -eux; \
     \
@@ -61,11 +55,6 @@ RUN set -eux; \
     sha256sum --check --status s6-overlay-x86_64.tar.xz.sha256; \
     tar -C / -Jxpf s6-overlay-x86_64.tar.xz; \
     \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/syslogd-overlay-noarch.tar.xz; \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/syslogd-overlay-noarch.tar.xz.sha256; \
-    sha256sum --check --status syslogd-overlay-noarch.tar.xz.sha256; \
-    tar -C / -Jxpf syslogd-overlay-noarch.tar.xz; \
-    \
     rm -rf /tmp/*;
 
 # Setup special user and group
@@ -79,29 +68,7 @@ RUN set -eux; \
         --uid ${GIT_UID} \
         --gecos git \
         --ingroup git \
-        git; \
-    \
-    addgroup --gid ${SYSLOG_GID} syslog; \
-    adduser \
-        --disabled-password \
-        --no-create-home \
-        --shell /sbin/nologin \
-        --home /dev/null \
-        --uid ${SYSLOG_UID} \
-        --gecos syslog \
-        --ingroup syslog \
-        syslog; \
-    \
-    addgroup --gid ${SYSLLOG_GID} sysllog; \
-    adduser \
-        --disabled-password \
-        --no-create-home \
-        --shell /sbin/nologin \
-        --home /dev/null \
-        --uid ${SYSLLOG_UID} \
-        --gecos sysllog \
-        --ingroup sysllog \
-        sysllog;
+        git;
 
 # Copy configure and entry files
 COPY /etc/ /etc/
