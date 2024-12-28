@@ -7,6 +7,13 @@ else
     is_sshd=0
 fi
 
+# Setup ssh run dirs
+pid_dir=/run/sshd
+if [ $is_sshd -eq 1 ] && [ ! -d "$pid_dir" ]; then
+    mkdir "$pid_dir"
+    chown git:git "$pid_dir"
+fi
+
 # Setup ssh host key dirs
 keys_dir=/etc/ssh/keypair.d
 if [ $is_sshd -eq 1 ] && [ ! -d "$keys_dir" ]; then
@@ -15,7 +22,7 @@ fi
 
 # Setup ssh host key
 key_file="${keys_dir}/ssh_host_ed25519_key"
-if [ $is_sshd -eq 1 ] && [ ! -f "$key_file" ] && [ ! -n "$HOSTD_KEY" ]; then
+if [ $is_sshd -eq 1 ] && [ ! -f "$key_file" ] && [ -z "$HOSTD_KEY" ]; then
     echo -n '> Generating ssh host ed25519 key...'
     ssh-keygen -q -N '' -f "$key_file" -t ed25519
     echo 'done'
@@ -36,6 +43,13 @@ if [ $is_sshd -eq 1 ] && ! grep -q "HostKey $key_file" "${con_file}"; then
     echo 'done'
 fi
 
+# Fix sshd permission at every sshd startup
+if [ $is_sshd -eq 1 ]; then
+    echo -n '> Fixing sshd host key permissions...'
+    chown git:git ${keys_dir}/*
+    echo 'done'
+fi
+
 # Fix volume permission at every sshd startup
 if [ $is_sshd -eq 1 ]; then
     echo -n '> Fixing gitolite data permissions...'
@@ -45,7 +59,7 @@ fi
 
 # Setup gitolite admin
 auth_keys=~git/.ssh/authorized_keys
-if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ ! -n "$ADMIN_KEY" ]; then
+if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ -z "$ADMIN_KEY" ]; then
     echo 'You need to specify ADMIN_KEY on first run to setup gitolite'
     echo 'Examples:'
     echo '    podman run \'

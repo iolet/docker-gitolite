@@ -25,11 +25,12 @@ Quick setup
            --name gitolite \
            --env "ADMIN_KEY=${ADMIN_KEY}" \
            --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
-           --mount type=volume,src=gitolite-home,dst=/var/local/lib/git,rw=true \
-           --publish 2222:22/tcp \
+           --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
+           --publish 8022:8022/tcp \
+           --publish 9418:9418/tcp \
            --restart on-failure:3 \
            --detach \
-           iolet/gitolite
+           localhost/iolet/gitolite:3.6.13-alpine3.20.3
 
 
 Build image
@@ -37,17 +38,17 @@ Build image
 
 .. code:: bash
 
-    RELEASE_TAG=3.0.1
-
-    ALPINE_VER=3.20.2
+    ALPINE_VER=3.20.3
     APK_MIRROR=https://mirror.lzu.edu.cn
     GITOLITE_TAG=v3.6.13
+    S6_OVERLAY_TAG=v3.2.0.2
 
     podman build \
         --build-arg "ALPINE_VER=${ALPINE_VER}" \
         --build-arg "APK_MIRROR=${APK_MIRROR}" \
         --build-arg "GITOLITE_TAG=${GITOLITE_TAG}" \
-        --tag "iolet/gitolite:${RELEASE_TAG}-gl$(echo $GITOLITE_TAG | tr -d 'v')-alpine${ALPINE_TAG}" \
+        --build-arg "S6_OVERLAY_TAG=${S6_OVERLAY_TAG}" \
+        --tag "iolet/gitolite:$(echo $GITOLITE_TAG | tr -d 'v')-alpine${ALPINE_VER}" \
         .
 
 Transfer image

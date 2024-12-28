@@ -6,7 +6,7 @@ FROM docker.io/library/alpine:${ALPINE_VER}
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
 
 # For source tag
-ARG GITOLITE3_TAG
+ARG GITOLITE_TAG
 ARG S6_OVERLAY_TAG
 
 # Git user and group id
@@ -32,7 +32,7 @@ RUN set -eux; \
 # Install gitolite from source
 RUN set -eux; \
     \
-    git clone --branch "${GITOLITE3_TAG}" --depth 1 --single-branch \
+    git clone --branch "${GITOLITE_TAG}" --depth 1 --single-branch \
         https://github.com/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
@@ -47,12 +47,12 @@ RUN set -eux; \
     \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz; \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz.sha256; \
-    sha256sum --check --status s6-overlay-noarch.tar.xz.sha256; \
-    tar -C / -Jxpf s6-overlay-noarch.tar.xz
+    sha256sum -c -s s6-overlay-noarch.tar.xz.sha256; \
+    tar -C / -Jxpf s6-overlay-noarch.tar.xz; \
     \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-x86_64.tar.xz; \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-x86_64.tar.xz.sha256; \
-    sha256sum --check --status s6-overlay-x86_64.tar.xz.sha256; \
+    sha256sum -c -s s6-overlay-x86_64.tar.xz.sha256; \
     tar -C / -Jxpf s6-overlay-x86_64.tar.xz; \
     \
     rm -rf /tmp/*;
@@ -82,6 +82,7 @@ VOLUME /var/lib/git
 
 # Expose port to access SSH
 EXPOSE 8022/tcp
+EXPOSE 9418/tcp
 
 # Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
 ENTRYPOINT ["docker-entrypoint.sh"]
