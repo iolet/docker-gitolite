@@ -1,6 +1,19 @@
+# VCS directory
 .git
-.vscode
-venv*
-conf.py
-LICENSE
-README.rst
+
+# Preference and Local History for Visual Studio Code
+.vscode/
+.history/
+
+# Sphinx Builds
+_build/
+
+# Venv Environments and files
+.venv/
+venv/
+.env*
+
+# Others files
+*.log
+*.tar.gz
+*.tar.zst
