@@ -4,6 +4,8 @@ export $(shell sed 's/=.*//' .env)
 
 src := $(shell find etc -type f -path 'etc/*') docker-entrypoint.sh Dockerfile
 tag := iolet/gitolite:$(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)
+
+img := $(shell podman image ls $(tag) --format 'table {{.Repository}}:{{.Tag}}' --noheading)
 zst := $(subst :,@,$(subst /,_,$(tag))).tar.zst
 
 .PHONY: tar
@@ -24,4 +26,5 @@ $(zst): $(src) .env
 
 .PHONY: clean
 clean:
-	rm *.tar.gz *.tar.zst *.log
+	-rm --force *.tar.gz *.tar.zst *.log
+	[ -z "$(img)" ] || podman image rm "$(img)"
