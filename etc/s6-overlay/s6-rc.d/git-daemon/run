@@ -1,3 +1,3 @@
 #!/command/execlineb -P
 fdmove -c 2 1
-/usr/libexec/git-core/git-daemon --user=git --group=git --base-path=/var/lib/git --log-destination=stderr
+/usr/libexec/git-core/git-daemon --user=git --group=git --base-path=/var/lib/git --reuseaddr
