@@ -1,5 +1,5 @@
 Container image for Gitolite
-=============================
+============================
 
 This project is based on `jgiannuzzi/docker-gitolite <https://github.com/jgiannuzzi/docker-gitolite>`_
 and enhanced security.
@@ -33,37 +33,36 @@ Quick setup
            localhost/iolet/gitolite:3.6.13-alpine3.20.3
 
 
+Import image
+------------
+
+run podman load command import (compressed) image archive
+
+.. code:: bash
+
+	podman load --input /path/to/(compressed)file
+
+
 Build image
 -----------
 
-.. code:: bash
-
-    ALPINE_VER=3.20.3
-    APK_MIRROR=https://mirror.lzu.edu.cn
-    GITOLITE_TAG=v3.6.13
-    S6_OVERLAY_TAG=v3.2.0.2
-
-    podman build \
-        --build-arg "ALPINE_VER=${ALPINE_VER}" \
-        --build-arg "APK_MIRROR=${APK_MIRROR}" \
-        --build-arg "GITOLITE_TAG=${GITOLITE_TAG}" \
-        --build-arg "S6_OVERLAY_TAG=${S6_OVERLAY_TAG}" \
-        --tag "iolet/gitolite:$(echo $GITOLITE_TAG | tr -d 'v')-alpine${ALPINE_VER}" \
-        .
-
-Transfer image
---------------
+first create .env file
 
 .. code:: bash
 
-    # export image with compression
-    podman save localhost/iolet/gitolite:latest | zstd - > iolet_gitolite_latest.tar.zst
+   cp .env.example .env`,
 
-    # import images directly
-    podman load --input iolet_gitolite_latest.tar.zst
+then fill content in `.env`,
+
+last run make command build image.
+
+.. code:: bash
+
+   make tar
+
 
 FAQ
------
+---
 
 #. When use podman to run, the repo hooks does not work ?
 
