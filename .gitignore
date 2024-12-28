@@ -2,8 +2,15 @@
 .vscode/
 .history/
 
-# Venv Environments
-venv/
-
 # Sphinx Builds
 _build/
+
+# Venv Environments and files
+.venv/
+venv/
+.env
+
+# Others files
+*.log
+*.tar.gz
+*.tar.zst
