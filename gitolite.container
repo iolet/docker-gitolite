@@ -1,0 +1,29 @@
+[Unit]
+Description=The gitolite container
+
+[Container]
+
+# Pass admin public key in env file (make sure read only by owner)
+EnvironmentFile=$HOME/.ssh/env.gitolite
+
+# Mount volumes to persist data
+Mount=type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true
+Mount=type=volume,src=gitolite-home,dst=/var/lib/git,rw=true
+
+# Expose ports to access
+PublishPort=8022:8022/tcp
+PublishPort=9418:9418/tcp
+
+# Target repo and tag
+Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
+
+# If you podman too old (less 4.6), the keys EnvironmentFile and Mount will be
+# no effect, please uncomment following lines and review supported cases in
+# quadlet docs https://github.com/containers/quadlet/blob/main/docs/Fileformat.md#container-files
+#
+#Environment="ADMIN_KEY=<SSH PUBLIC KEY>"
+#Volume=gitolite-home.volume:/var/lib/git/:rw
+#Volume=gitolite-keys.volume:/etc/ssh/keypair.d/:rw
+
+[Install]
+WantedBy=multi-user.target

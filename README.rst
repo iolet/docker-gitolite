@@ -11,8 +11,8 @@ Quick setup
 
    .. code:: bash
 
-       podman volume create gitolite-keys
        podman volume create gitolite-home
+       podman volume create gitolite-keys
 
 
 #. Start your Gitolite container with admin SSH public key
@@ -24,8 +24,8 @@ Quick setup
        podman run \
            --name gitolite \
            --env "ADMIN_KEY=${ADMIN_KEY}" \
-           --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
            --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
+           --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
            --publish 8022:8022/tcp \
            --publish 9418:9418/tcp \
            --restart on-failure:3 \
@@ -50,7 +50,7 @@ first create .env file
 
 .. code:: bash
 
-   cp .env.example .env`,
+   cp .env.example .env
 
 then fill content in `.env`,
 
