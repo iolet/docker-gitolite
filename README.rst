@@ -28,8 +28,7 @@ Quick setup
            --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
            --publish 8022:8022/tcp \
            --publish 9418:9418/tcp \
-           --restart on-failure:3 \
-           --detach \
+           --rm \
            localhost/iolet/gitolite:3.6.13-alpine3.20.3
 
 
@@ -63,6 +62,12 @@ last run make command build image.
 
 FAQ
 ---
+
+#. How to production deploy as user service
+
+   Copy gitolite-home.volume, gitolite-keys.volume and gitolite.container
+   to $HOME/.config/containers/systemd and make sure gitolite.container
+   default keys are work well, then enable user lingering
 
 #. When use podman to run, the repo hooks does not work ?
 
