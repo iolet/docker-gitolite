@@ -70,8 +70,10 @@ fi
 if [ $is_sshd -eq 1 ] && [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
     echo '> Initialling gitolite admin repository...'
     echo "$ADMIN_KEY" | tr -d "\n" > /dev/shm/admin.pub
+    su - git -c 'git config --global init.defaultBranch master'
     su - git -c 'gitolite setup --pubkey /dev/shm/admin.pub'
     rm /dev/shm/admin.pub
+    rm ~git/.gitconfig
     echo '> done'
 fi
 
