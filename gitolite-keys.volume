@@ -5,4 +5,5 @@ Description=The gitolite keys volume
 Driver=local
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target default.target
+

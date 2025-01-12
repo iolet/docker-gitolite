@@ -4,9 +4,10 @@ Description=The gitolite container
 [Container]
 
 # Pass admin public key in env file (make sure read only by owner)
-EnvironmentFile=$HOME/.ssh/env.gitolite
+EnvironmentFile=$HOME/.ssh/gitolite.env
 
-# Disable minimal init process injection by runtime
+# Disable minimal init process injection by runtime to avoid s6-overlay
+# init process fails
 RunInit=no
 
 # Disables the container processes from gaining additional privileges via
@@ -39,4 +40,5 @@ Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
 #Volume=gitolite-keys.volume:/etc/ssh/keypair.d/:rw
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target default.target
+
