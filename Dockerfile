@@ -16,14 +16,14 @@ ARG GIT_UID=201
 # Install dependencies and tools
 RUN set -eux; \
     \
-    if [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+    if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
         sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
     fi; \
     \
     apk add --no-cache curl git git-daemon perl tree openssh-server; \
     perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
     \
-    if [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+    if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
         sed -i "s@${APK_MIRROR}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
     fi; \
     \
@@ -72,7 +72,7 @@ RUN set -eux; \
 
 # Copy configure and entry files
 COPY /etc/ /etc/
-COPY docker-entrypoint.sh /usr/local/bin
+COPY entrypoint.sh /usr/local/bin
 
 # Volume used to store SSH host key, generated on first run
 VOLUME /etc/ssh/keypair.d
@@ -85,7 +85,7 @@ EXPOSE 8022/tcp
 EXPOSE 9418/tcp
 
 # Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 
 # Default command to run s6-overlay
 CMD ["/init"]

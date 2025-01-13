@@ -5,5 +5,9 @@ BEGIN {
 }
 
 /^FROM\s*/ {
-    print $2
+    line=$2
+}
+
+END {
+    print line
 }
