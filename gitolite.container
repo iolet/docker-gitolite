@@ -17,6 +17,7 @@ NoNewPrivileges=yes
 # Add capabilities to support rootless in container
 # see https://github.com/opencontainers/runc/discussions/4229#discussioncomment-8949043
 AddCapability=CAP_CHOWN
+AddCapability=CAP_FOWNER
 AddCapability=CAP_SETUID
 AddCapability=CAP_SETGID
 
@@ -41,4 +42,3 @@ Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
 
 [Install]
 WantedBy=multi-user.target default.target
-
