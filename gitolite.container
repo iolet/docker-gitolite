@@ -16,8 +16,10 @@ NoNewPrivileges=yes
 
 # Add capabilities to support rootless in container
 # see https://github.com/opencontainers/runc/discussions/4229#discussioncomment-8949043
+# and https://www.man7.org/linux/man-pages/man7/capabilities.7.html
 AddCapability=CAP_CHOWN
 AddCapability=CAP_FOWNER
+AddCapability=CAP_KILL
 AddCapability=CAP_SETUID
 AddCapability=CAP_SETGID
 
