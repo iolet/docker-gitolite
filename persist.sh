@@ -35,7 +35,7 @@ for repo in $repos; do
         # checking repo has any commit,
         # see https://stackoverflow.com/questions/5491832/how-can-i-check-whether-a-git-repository-has-any-commits-in-it
         # and https://unix.stackexchange.com/questions/242946/using-awk-to-sum-the-values-of-a-column-based-on-the-values-of-another-column
-        objects=$(git count-objects -v | awk '{ acc += $2 } END { print acc }')
+        objects=$(cd "${reporoot}/${repo}.git" && git count-objects -v | awk '{ acc += $2 } END { print acc }')
 
         # skipping empty repo
         if [ $objects -eq 0 ]; then
