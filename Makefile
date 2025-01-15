@@ -2,7 +2,7 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-src := $(shell find etc -type f -path 'etc/*') entrypoint.sh Dockerfile
+src := $(shell find etc -type f -path 'etc/*') entrypoint.sh Dockerfile persist.sh
 tag := iolet/gitolite:$(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)
 
 img := $(shell podman image ls $(tag) --format 'table {{.Repository}}:{{.Tag}}' --noheading)
