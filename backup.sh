@@ -7,9 +7,9 @@ reporoot=/var/lib/git/repositories
 
 workdir=$(mktemp -d)
 repos=$(gitolite list-repos)
-moment=$(date +%Y%m%d-%s)
+moment=$(date +%Y-%m-%dT%H:%M:%S%z)
 
-echo "[${moment}] packing repos in ${reporoot}"
+echo "packing repos in ${reporoot} for $moment"
 
 for repo in $repos; do
 
@@ -36,7 +36,7 @@ for repo in $repos; do
 	git bundle create --quiet "${name}_all.bundle" --all > /dev/null 2>&1
 	git bundle verify --quiet "${name}_all.bundle" > /dev/null 2>&1
 
-	cp "${name}_all.bundle" "${bundroot}/${name}_all_${moment}.bundle"
+	cp "${name}_all.bundle" "${bundroot}/${name}_all_${moment//:/-}.bundle"
 
         echo "done"
 done;
