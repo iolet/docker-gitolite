@@ -1,21 +1,36 @@
-#!/usr/bin/sh
+#!/bin/sh
 
-set eu
+set -eu
 
-bundroot=/srv/backups
-reporoot=/var/lib/git/repositories
+bundroot=${1:?'target is required'}
 
-workdir=$(mktemp -d)
-repos=$(gitolite list-repos)
+if [[ "${bundroot}" =~ \S*/$ ]]; then
+        bundroot="${bundroot%/}"
+fi
+
+if [ ! -n "${bundroot}" ]; then
+        echo "unknown target, aborted"
+        exit 1
+fi
+
+if [ ! -d "${bundroot}" ]; then
+        echo "target ${bundroot} does not exists, aborted"
+        exit 2
+fi
+
+start=$(pwd)
 moment=$(date +%Y-%m-%dT%H:%M:%S%z)
+workdir=$(mktemp -d)
+reporoot=$(gitolite query-rc GL_REPO_BASE)
 
-echo "packing repos in ${reporoot} for $moment"
+echo "persisting repos to ${bundroot} at ${moment}"
 
+repos=$(gitolite list-repos)
 for repo in $repos; do
 
         echo -n "-> ${repo}.git..."
 
-	cd $workdir
+	cd "$workdir"
 
         # checking repo has any commit,
         # see https://stackoverflow.com/questions/5491832/how-can-i-check-whether-a-git-repository-has-any-commits-in-it
@@ -41,5 +56,5 @@ for repo in $repos; do
         echo "done"
 done;
 
-rm -rf $workdir
-unset bundroot reporoot workdir repos moment
+cd "$start" && rm -rf "$workdir"
+unset bundroot start moment workdir reporoot repos
