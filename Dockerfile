@@ -53,8 +53,8 @@ RUN set -eux; \
     \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz; \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz.sha256; \
-    sha256sum -c -s s6-overlay-x86_64.tar.xz.sha256; \
-    tar -C / -Jxpf s6-overlay-x86_64.tar.xz; \
+    sha256sum -c -s s6-overlay-${TARGET_ARCH}.tar.xz.sha256; \
+    tar -C / -Jxpf s6-overlay-${TARGET_ARCH}.tar.xz; \
     \
     rm -rf /tmp/*;
 
