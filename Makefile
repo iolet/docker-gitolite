@@ -3,10 +3,13 @@ include .env
 export $(shell sed 's/=.*//' .env)
 
 src := $(shell find etc -type f -path 'etc/*') entrypoint.sh Dockerfile persist.sh
-tag := iolet/gitolite:$(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)
+
+rev := $(shell git show --no-patch --date=format:%Y%m%d --pretty=format:%cd.%h $$(git rev-parse HEAD))
+tag := iolet/gitolite:$(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)-rev$(rev)
 
 img := $(shell podman image ls $(tag) --format 'table {{.Repository}}:{{.Tag}}' --noheading)
 zst := $(subst :,@,$(subst /,_,$(tag))).tar.zst
+
 
 .PHONY: tar
 tar: $(zst)
