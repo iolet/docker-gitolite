@@ -44,14 +44,15 @@ RUN set -eux; \
 RUN set -eux; \
     \
     cd /tmp; \
+    TARGET_ARCH=$(apk --print-arch); \
     \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz; \
     curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz.sha256; \
     sha256sum -c -s s6-overlay-noarch.tar.xz.sha256; \
     tar -C / -Jxpf s6-overlay-noarch.tar.xz; \
     \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-x86_64.tar.xz; \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-x86_64.tar.xz.sha256; \
+    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz; \
+    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz.sha256; \
     sha256sum -c -s s6-overlay-x86_64.tar.xz.sha256; \
     tar -C / -Jxpf s6-overlay-x86_64.tar.xz; \
     \
