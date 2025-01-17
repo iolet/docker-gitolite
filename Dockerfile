@@ -71,8 +71,8 @@ RUN set -eux; \
         --ingroup git \
         git;
 
-# Copy configure and entry files
-COPY /etc/ /etc/
+# Copy configure and others files
+COPY etc/ /etc/
 COPY entrypoint.sh persist.sh /usr/local/bin/
 
 # Volume used to store SSH host key, generated on first run
@@ -81,7 +81,7 @@ VOLUME /etc/ssh/keypair.d
 # Volume used to store all Gitolite data (keys, config and repositories), initialized on first run
 VOLUME /var/lib/git
 
-# Expose port to access SSH
+# Expose port to access SSH and git daemon
 EXPOSE 8022/tcp
 EXPOSE 9418/tcp
 
