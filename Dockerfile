@@ -73,7 +73,7 @@ RUN set -eux; \
 
 # Copy configure and others files
 COPY etc/ /etc/
-COPY entrypoint.sh persist.sh /usr/local/bin/
+COPY entrypoint.sh packing.sh /usr/local/bin/
 
 # Volume used to store SSH host key, generated on first run
 VOLUME /etc/ssh/keypair.d

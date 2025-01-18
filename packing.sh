@@ -2,19 +2,19 @@
 
 set -eu
 
-bundroot=${1:?'target is required'}
+bundroot=${1:?'destination is required'}
 
 if [[ "${bundroot}" =~ \S*/$ ]]; then
         bundroot="${bundroot%/}"
 fi
 
 if [ ! -n "${bundroot}" ]; then
-        echo "unknown target, aborted"
+        echo "unknown destination, aborted"
         exit 1
 fi
 
 if [ ! -d "${bundroot}" ]; then
-        echo "target ${bundroot} does not exists, aborted"
+        echo "destination ${bundroot} does not exists, aborted"
         exit 2
 fi
 
