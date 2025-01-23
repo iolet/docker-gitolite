@@ -1,3 +1,4 @@
 #!/command/execlineb -P
-fdmove -c 2 1
-/usr/libexec/git-core/git-daemon --user=git --group=git --base-path=/var/lib/git/repositories --reuseaddr
+/command/fdmove -c 2 1
+/command/s6-setuidgid git
+/usr/libexec/git-core/git-daemon --reuseaddr --base-path=/var/lib/git/repositories
