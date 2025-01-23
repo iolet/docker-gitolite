@@ -2,30 +2,41 @@
 
 set -eu
 
-bundroot=${1:?'destination is required'}
+backupdir=${1?"backupdir is required"}
 
-if [[ "${bundroot}" =~ \S*/$ ]]; then
-        bundroot="${bundroot%/}"
+if [ "expr '${backupdir}' : '.*/$'" ]; then
+        backupdir="${backupdir%/}"
 fi
 
-if [ ! -n "${bundroot}" ]; then
-        echo "unknown destination, aborted"
+if [ -z "${backupdir}" ]; then
+        echo "unknown backupdir, aborted"
         exit 1
 fi
 
-if [ ! -d "${bundroot}" ]; then
-        echo "destination ${bundroot} does not exists, aborted"
+if [ ! -d "${backupdir}" ]; then
+        echo "backupdir ${backupdir} does not exists, aborted"
+        exit 2
+fi
+
+container=${2?"container is required"}
+
+if [ -z "${container}" ]; then
+        echo "unknown container ${container}, aborted"
+        exit 1
+fi
+
+if [ -z "$(podman container list --noheading --filter 'status=running' --filter \"name=^${container}\$\")" ]; then
+        echo "container ${container} does not exists or stopped, aborted"
         exit 2
 fi
 
 start=$(pwd)
-moment=$(date +%Y-%m-%dT%H:%M:%S%z)
+moment=$(date +%Y-%m-%dT%H%M%S%z)
 workdir=$(mktemp -d)
-reporoot=$(gitolite query-rc GL_REPO_BASE)
 
-echo "persisting repos to ${bundroot} at ${moment}"
+prefix=$(podman exec "${container}" su - git -c 'gitolite query-rc GL_REPO_BASE')
+repos=$(podman exec "${container}" su - git -c 'gitolite list-repos | grep -v gitolite-admin')
 
-repos=$(gitolite list-repos)
 for repo in $repos; do
 
         echo -n "-> ${repo}.git..."
@@ -35,27 +46,31 @@ for repo in $repos; do
         # checking repo has any commit,
         # see https://stackoverflow.com/questions/5491832/how-can-i-check-whether-a-git-repository-has-any-commits-in-it
         # and https://unix.stackexchange.com/questions/242946/using-awk-to-sum-the-values-of-a-column-based-on-the-values-of-another-column
-        objects=$(cd "${reporoot}/${repo}.git" && git count-objects -v | awk '{ acc += $2 } END { print acc }')
+        # echo "cd ${prefix}/${repo}.git && git count-objects -v | awk '{ acc += \$2 } END { print acc }'"
+        objects=$(
+                podman exec "${container}" su - git -c \
+                "cd ${prefix}/${repo}.git && git count-objects -v | awk '{ acc += \$2 } END { print acc }'"
+        )
 
         # skipping empty repo
         if [ $objects -eq 0 ]; then
-            echo "skipped"
-            continue
+                echo "skipped"
+                continue
         fi
-
-	git clone --quiet --bare "${reporoot}/${repo}.git" > /dev/null 2>&1
 
         name=$(basename "$repo")
 
-	cd "${name}.git"
+	git clone --quiet "ssh://git@localhost:8022/${repo}.git" "$name" > /dev/null 2>&1
+
+	cd "${name}"
 
 	git bundle create --quiet "${name}_all.bundle" --all > /dev/null 2>&1
 	git bundle verify --quiet "${name}_all.bundle" > /dev/null 2>&1
 
-	cp "${name}_all.bundle" "${bundroot}/${name}_all_${moment//:/-}.bundle"
+	cp "${name}_all.bundle" "${backupdir}/${name}_all_${moment}.bundle"
 
         echo "done"
 done;
 
 cd "$start" && rm -rf "$workdir"
-unset bundroot start moment workdir reporoot repos
+unset backupdir container start moment workdir prefix repos
