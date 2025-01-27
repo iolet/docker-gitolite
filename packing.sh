@@ -2,9 +2,19 @@
 
 set -eu
 
-PERSISTS=${3:-15}
+container=${1?"container is required"}
 
-backupdir=${1?"backupdir is required"}
+if [ -z "${container}" ]; then
+    echo "unknown container ${container}, aborted"
+    exit 1
+fi
+
+if [ -z "$(podman container list --noheading --filter 'status=running' --filter \"name=^${container}\$\")" ]; then
+    echo "container ${container} does not exists or stopped, aborted"
+    exit 2
+fi
+
+backupdir=${2?"backupdir is required"}
 
 if [ "expr '${backupdir}' : '.*/$'" ]; then
     backupdir="${backupdir%/}"
@@ -17,18 +27,6 @@ fi
 
 if [ ! -d "${backupdir}" ]; then
     echo "backupdir ${backupdir} does not exists, aborted"
-    exit 2
-fi
-
-container=${2?"container is required"}
-
-if [ -z "${container}" ]; then
-    echo "unknown container ${container}, aborted"
-    exit 1
-fi
-
-if [ -z "$(podman container list --noheading --filter 'status=running' --filter \"name=^${container}\$\")" ]; then
-    echo "container ${container} does not exists or stopped, aborted"
     exit 2
 fi
 
@@ -70,12 +68,6 @@ for repo in $repos; do
     git bundle verify --quiet "${name}_all.bundle" > /dev/null 2>&1
 
     cp "${name}_all.bundle" "${backupdir}/${name}_all_${moment}.bundle"
-
-    prunes=$(find "${backupdir}" -type f -name "${name}_all_*.bundle" | sort -b -d -f -r | tail --lines +$(expr $PERSISTS + 1))
-
-    if [ -n "${prunes}" ]; then
-        echo "${prunes}" | xargs -d "\n" rm -f
-    fi
 
     echo "done"
 done;
