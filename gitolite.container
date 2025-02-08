@@ -8,11 +8,11 @@ EnvironmentFile=$HOME/.ssh/gitolite.env
 
 # Disable minimal init process injection by runtime to avoid s6-overlay
 # init process fails
-RunInit=no
+RunInit=false
 
 # Disables the container processes from gaining additional privileges via
 # things like setuid and file capabilities
-NoNewPrivileges=yes
+NoNewPrivileges=true
 
 # Add capabilities to support rootless in container
 # see https://github.com/opencontainers/runc/discussions/4229#discussioncomment-8949043
