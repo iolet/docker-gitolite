@@ -20,7 +20,7 @@ $(zst): $(src) .env
            --build-arg APK_MIRROR=$(APK_MIRROR) \
            --build-arg GITOLITE_TAG=$(GITOLITE_TAG) \
            --build-arg S6_OVERLAY_TAG=$(S6_OVERLAY_TAG) \
-           --annotation org.opencontainers.image.base.name=$(shell awk -f program.awk Dockerfile):$(ALPINE_VER) \
+           --annotation org.opencontainers.image.base.name=$(shell awk -f baseimage.awk Dockerfile):$(ALPINE_VER) \
            --annotation org.opencontainers.image.created=$(shell date --utc '+%FT%H:%M:%SZ') \
            --annotation org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
            --tag $(tag) \
