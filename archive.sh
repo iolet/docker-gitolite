@@ -37,9 +37,11 @@ workdir=$(mktemp -d)
 prefix=$(podman exec "${container}" su - git -c 'gitolite query-rc GL_REPO_BASE')
 repos=$(podman exec "${container}" su - git -c 'gitolite list-repos | grep -v gitolite-admin')
 
+echo "MOMENT AT $moment"
+
 for repo in $repos; do
 
-    echo "-> ${repo}.git..."
+    echo "${repo}.git..."
 
     cd "$workdir"
 
@@ -47,7 +49,7 @@ for repo in $repos; do
     # see https://stackoverflow.com/questions/5491832/how-can-i-check-whether-a-git-repository-has-any-commits-in-it
     # and https://unix.stackexchange.com/questions/242946/using-awk-to-sum-the-values-of-a-column-based-on-the-values-of-another-column
     # echo "cd ${prefix}/${repo}.git && git count-objects -v | awk '{ acc += \$2 } END { print acc }'"
-    echo "> check objects..."
+    echo "+ check objects..."
     objects=$(
         podman exec "${container}" su - git -c \
         "cd ${prefix}/${repo}.git && git count-objects -v | awk '{ acc += \$2 } END { print acc }'"
@@ -60,18 +62,17 @@ for repo in $repos; do
 
     name=$(basename "$repo")
 
-    echo "> clone to local..."
-    git clone --quiet "ssh://git@localhost:8022/${repo}.git" "$name"
-
+    echo "+ clone to local..."
+    git clone --quiet "ssh://git@localhost:8022/${repo}.git" "$name" >/dev/null 2>&1
     cd "${name}"
 
-    echo "> package as bundle..."
-    git bundle create --quiet "${name}_all.bundle" --all
+    echo "+ package as bundle..."
+    git bundle create --quiet "${name}_all.bundle" --all >/dev/null 2>&1
 
-    echo "> verify local bundle..."
-    git bundle verify --quiet "${name}_all.bundle"
+    echo "+ verify local bundle..."
+    git bundle verify --quiet "${name}_all.bundle" >/dev/null 2>&1
 
-    echo "> output bundle..."
+    echo "+ output bundle..."
     cp "${name}_all.bundle" "${backupdir}/${name}_all_${moment}.bundle"
 
 done;
