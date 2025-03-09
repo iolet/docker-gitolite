@@ -7,6 +7,7 @@ ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
 
 # For source tag
 ARG GITOLITE_TAG
+ARG GOSU_TAG
 
 # Git user and group id
 ARG GIT_GID=201
@@ -52,8 +53,8 @@ RUN set -eux; \
         TARGET_ARCH=arm64; \
     fi; \
     \
-    curl --progress-bar --location --output gosu https://github.com/tianon/gosu/releases/download/${GOSU_TAGED}/gosu-${TARGET_ARCH}; \
-    curl --progress-bar --location --output gosu.asc https://github.com/tianon/gosu/releases/download/${GOSU_TAGED}/gosu-${TARGET_ARCH}.asc; \
+    curl --progress-bar --location --output gosu https://github.com/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}; \
+    curl --progress-bar --location --output gosu.asc https://github.com/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}.asc; \
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify gosu.asc gosu; \
