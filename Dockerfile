@@ -7,7 +7,6 @@ ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
 
 # For source tag
 ARG GITOLITE_TAG
-ARG S6_OVERLAY_TAG
 
 # Git user and group id
 ARG GIT_GID=201
@@ -20,7 +19,7 @@ RUN set -eux; \
         sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
     fi; \
     \
-    apk add --no-cache curl git git-daemon perl tree openssh-server; \
+    apk add --no-cache curl git perl openssh-server; \
     perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
     \
     if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
@@ -41,20 +40,26 @@ RUN set -eux; \
     \
     rm -rf /tmp/*;
 
+# Install gosu from release
 RUN set -eux; \
     \
     cd /tmp; \
     TARGET_ARCH=$(apk --print-arch); \
     \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz; \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-noarch.tar.xz.sha256; \
-    sha256sum -c -s s6-overlay-noarch.tar.xz.sha256; \
-    tar -C / -Jxpf s6-overlay-noarch.tar.xz; \
+    if [ 'x86_64' = "$TARGET_ARCH" ]; then \
+        TARGET_ARCH=amd64; \
+    elif [ 'aarch64' = "$TARGET_ARCH" ]; then \
+        TARGET_ARCH=arm64; \
+    fi; \
     \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz; \
-    curl --progress-bar --location --remote-name https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_TAG}/s6-overlay-${TARGET_ARCH}.tar.xz.sha256; \
-    sha256sum -c -s s6-overlay-${TARGET_ARCH}.tar.xz.sha256; \
-    tar -C / -Jxpf s6-overlay-${TARGET_ARCH}.tar.xz; \
+    curl --progress-bar --location --output gosu https://github.com/tianon/gosu/releases/download/${GOSU_TAGED}/gosu-${TARGET_ARCH}; \
+    curl --progress-bar --location --output gosu.asc https://github.com/tianon/gosu/releases/download/${GOSU_TAGED}/gosu-${TARGET_ARCH}.asc; \
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --batch --verify gosu.asc gosu; \
+	gpgconf --kill all; \
+    cp gosu /usr/local/bin/; \
+    chmod +x /usr/local/bin/gosu; \
     \
     rm -rf /tmp/*;
 
@@ -83,10 +88,9 @@ VOLUME /var/lib/git
 
 # Expose port to access SSH and git daemon
 EXPOSE 8022/tcp
-EXPOSE 9418/tcp
 
 # Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
 ENTRYPOINT ["entrypoint.sh"]
 
 # Default command to run s6-overlay
-CMD ["/init"]
+CMD ["/usr/sbin/sshd"]

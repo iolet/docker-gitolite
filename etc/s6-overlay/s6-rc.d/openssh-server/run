@@ -1,4 +1,0 @@
-#!/command/execlineb -P
-/command/fdmove -c 2 1
-/command/s6-setuidgid git
-/usr/sbin/sshd -D -e -p 8022
