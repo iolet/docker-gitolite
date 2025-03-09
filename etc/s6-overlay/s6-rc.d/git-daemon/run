@@ -1,5 +1,0 @@
-#!/command/execlineb -P
-/command/fdmove -c 2 1
-/command/s6-setuidgid git
-/command/backtick -i -n -E HOME_OF { /command/homeof git }
-/usr/libexec/git-core/git-daemon --reuseaddr --base-path=${HOME_OF}/repositories
