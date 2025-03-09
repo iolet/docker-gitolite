@@ -51,16 +51,18 @@ echo -n '> Fixing gitolite data permissions...'
 chown -R git:git ~git
 echo 'done'
 
-# Setup gitolite admin
+# Show help usage when gitolite admin not given
 auth_keys=~git/.ssh/authorized_keys
 if [ ! -f "$auth_keys" ] && [ -z "$ADMIN_KEY" ]; then
     echo 'You need to specify ADMIN_KEY on first run to setup gitolite'
     echo 'Examples:'
     echo '    podman run \'
     echo '        --env ADMIN_KEY="$(cat ~/.ssh/id_ed25519.pub)"'
-    echo '        <REGISTRY>/iolet/gitolite'
+    echo '        <REGISTRY>/iolet:gitolite'
     exit 1
 fi
+
+# Initial gitolite admin repository
 if [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
     echo '> Initialling gitolite admin repository...'
     echo "$ADMIN_KEY" | tr -d "\n" > /dev/shm/admin.pub
@@ -72,13 +74,11 @@ if [ ! -f "$auth_keys" ] && [ -n "$ADMIN_KEY" ]; then
 fi
 
 # Check setup at every sshd startup
-if [ $is_sshd -eq 1 ]; then
-    echo -n '> Checking gitolite initialization...'
-    su - git -c 'gitolite setup'
-    echo 'done'
-fi
+echo -n '> Checking gitolite initialization...'
+su - git -c 'gitolite setup'
+echo 'done'
 
 # Clean temp variables
-unset is_sshd keys_dir key_file con_file auth_keys
+unset keys_dir key_file con_file auth_keys
 
 exec gosu git "$@" -D -e -p 8022
