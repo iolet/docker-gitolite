@@ -93,5 +93,5 @@ EXPOSE 8022/tcp
 # Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
 ENTRYPOINT ["entrypoint.sh"]
 
-# Default command to run s6-overlay
+# Run openssh server
 CMD ["/usr/sbin/sshd"]
