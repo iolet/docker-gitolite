@@ -1,6 +1,6 @@
 ARG ALPINE_VER
 
-FROM docker.io/library/alpine:${ALPINE_VER}
+FROM docker.io/library/alpine:${ALPINE_VER} as builder
 
 # Maybe we want mirror for package
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
@@ -9,10 +9,6 @@ ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
 ARG GITOLITE_TAG
 ARG GOSU_TAG
 
-# Git user and group id
-ARG GIT_GID=201
-ARG GIT_UID=201
-
 # Install dependencies and tools
 RUN set -eux; \
     \
@@ -20,14 +16,7 @@ RUN set -eux; \
         sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
     fi; \
     \
-    apk add --no-cache curl git perl openssh-server; \
-    perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
-    \
-    if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
-        sed -i "s@${APK_MIRROR}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
-    fi; \
-    \
-    rm -rf /var/cache/apk/* /tmp/*;
+    apk add --no-cache curl git gpg gpg-agent perl;
 
 # Install gitolite from source
 RUN set -eux; \
@@ -36,10 +25,8 @@ RUN set -eux; \
         https://github.com/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
-    /tmp/gitolite/install -to /usr/local/lib/gitolite3; \
-    ln -s /usr/local/lib/gitolite3/gitolite /usr/local/bin/gitolite; \
     \
-    rm -rf /tmp/*;
+    /tmp/gitolite/install -to /usr/local/lib/gitolite3;
 
 # Install gosu from release
 RUN set -eux; \
@@ -60,12 +47,43 @@ RUN set -eux; \
 	gpg --batch --verify gosu.asc gosu; \
 	gpgconf --kill all; \
     cp gosu /usr/local/bin/; \
-    chmod +x /usr/local/bin/gosu; \
-    \
-    rm -rf /tmp/*;
+    chmod +x /usr/local/bin/gosu;
 
-# Setup special user and group
+FROM docker.io/library/alpine:${ALPINE_VER}
+
+# Inherited previous stage arg variable value
+ARG APK_MIRROR
+
+# Git user gid and uid
+ARG GIT_GID=201
+ARG GIT_UID=201
+
+# Copy sudo and gitolite files
+COPY --from=builder /usr/local/bin/gosu /usr/local/bin/
+COPY --from=builder /usr/local/lib/gitolite3/ /usr/local/lib/gitolite3/
+
+# Install dependencies and tools
 RUN set -eux; \
+    \
+    if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+        sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
+    fi; \
+    \
+    apk add --no-cache git perl openssh-server; \
+    perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
+    \
+    if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
+        sed -i "s@${APK_MIRROR}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
+    fi; \
+    \
+    rm -rf /var/cache/apk/* /tmp/*;
+
+# Setup alias and user isolate
+RUN set -eux; \
+    \
+    ln -s \
+        /usr/local/lib/gitolite3/gitolite \
+        /usr/local/bin/gitolite; \
     \
     addgroup --gid ${GIT_GID} git; \
     adduser \
