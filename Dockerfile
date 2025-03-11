@@ -21,7 +21,9 @@ RUN set -eux; \
 # Install gitolite from source
 RUN set -eux; \
     \
-    git clone --branch "${GITOLITE_TAG}" --depth 1 --single-branch \
+    TARGET_BRANCH="v${GITOLITE_TAG##*v}"; \
+    \
+    git clone --branch "${TARGET_BRANCH}" --depth 1 --single-branch \
         https://github.com/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
