@@ -11,8 +11,8 @@ img := $(shell podman image ls $(tag) --format 'table {{.Repository}}:{{.Tag}}' 
 zst := $(subst :,@,$(subst /,_,$(tag))).tar.zst
 
 
-.PHONY: tar
-tar: $(zst)
+.PHONY: tarball
+tarball: $(zst)
 
 $(zst): $(src) .env
 	podman build \
