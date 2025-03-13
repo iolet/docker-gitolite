@@ -27,23 +27,12 @@ Quick setup
            --mount type=volume,src=gitolite-home,dst=/var/lib/git,rw=true \
            --mount type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true \
            --publish 8022:8022/tcp \
-           --publish 9418:9418/tcp \
-           --rm \
-           localhost/iolet/gitolite:3.6.13-alpine3.20.3
+           --detach \
+           localhost/iolet/gitolite:3.6.13-alpine3.20.6
 
 
-Import image
-------------
-
-run podman load command import (compressed) image archive
-
-.. code:: bash
-
-	podman load --input /path/to/(compressed)file
-
-
-Build image
------------
+How to build image
+-------------------
 
 first create .env file
 
@@ -51,13 +40,19 @@ first create .env file
 
    cp .env.example .env
 
-then fill content in `.env`,
+then fill content in `.env`, for example
+
+.. code:: env
+
+   ALPINE_VER=3.20.6
+   GITOLITE_TAG=3.6.13
+   GOSU_TAG=1.17
 
 last run make command build image.
 
 .. code:: bash
 
-   make tar
+   make tarball
 
 
 FAQ
