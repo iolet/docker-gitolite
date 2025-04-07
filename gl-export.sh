@@ -36,8 +36,7 @@ echo "${workdir}"
 cd "$workdir"
 
 echo "+ clone work tree..."
-# use big solidus(U+29F8) to replace solidus(U+002F) avoid filename unsafe
-fullname=$(printf '%s' "$reponame" | sed 's@/@⧸@g')
+fullname=$(printf '%s' "$reponame" | sed 's!/!.!g')
 git clone --bare "$repouri" "$fullname"
 cd "${fullname}"
 

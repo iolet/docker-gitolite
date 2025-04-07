@@ -14,8 +14,7 @@ repoprefix=${2?"repoprefix is required"}
 
 startin=$(pwd)
 
-# use big solidus(U+29F8) to replace solidus(U+002F) avoid filename unsafe
-reponame=$(basename "$bundlefile" | awk -F '_' '{print $1}' | sed 's!⧸!/!g')
+reponame=$(basename "$bundlefile" | awk -F '_' '{print $1}' | sed 's!.!/!g')
 echo "-> import ${reponame}.git..."
 
 echo "+ create and enter working directory..."
