@@ -71,8 +71,7 @@ RUN set -eux; \
         sed -i "s@https://dl-cdn.alpinelinux.org@${APK_MIRROR}@g" /etc/apk/repositories; \
     fi; \
     \
-    apk add --no-cache git perl openssh-server; \
-    perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
+    apk add --no-cache git perl openssh-server tzdata; \
     \
     if [ -n "${APK_MIRROR}" ] && [ "${APK_MIRROR}" != "https://dl-cdn.alpinelinux.org" ]; then \
         sed -i "s@${APK_MIRROR}@https://dl-cdn.alpinelinux.org@g" /etc/apk/repositories; \
@@ -83,11 +82,14 @@ RUN set -eux; \
 # Setup alias and user isolate
 RUN set -eux; \
     \
-    ln -s \
-        /usr/local/lib/gitolite3/gitolite \
-        /usr/local/bin/gitolite; \
+    perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
     \
-    addgroup --gid ${GIT_GID} git; \
+    ln -s /usr/local/lib/gitolite3/gitolite /usr/local/bin/gitolite; \
+    \
+    addgroup \
+        --gid ${GIT_GID} \
+        git; \
+    \
     adduser \
         --disabled-password \
         --shell /bin/ash \
