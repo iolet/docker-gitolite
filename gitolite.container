@@ -3,12 +3,29 @@ Description=The gitolite container
 
 [Container]
 
+# Target repo and tag
+Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
+
+# Expose ports to access
+PublishPort=8022:8022/tcp
+
 # Pass admin public key in env file (make sure read only by owner)
 EnvironmentFile=$HOME/.ssh/gitolite.env
 
-# Disable minimal init process injection by runtime to avoid s6-overlay
-# init process fails
-RunInit=false
+# Mount volumes to persist data
+Mount=type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true
+Mount=type=volume,src=gitolite-home,dst=/var/lib/git,rw=true
+
+# If podman is too old (less 4.6), the EnvironmentFile and Mount are not
+# supported in quadlet, use Environment and Volume instead. For more details,
+# see https://github.com/containers/quadlet/blob/main/docs/Fileformat.md#container-files
+
+# Pass admin public key (old)
+#Environment="ADMIN_KEY={{ admin_public_key }}"
+
+# Mount volumes to persist data (old)
+#Volume=gitolite-home.volume:/var/lib/git/:rw
+#Volume=gitolite-keys.volume:/etc/ssh/keypair.d/:rw
 
 # Disables the container processes from gaining additional privileges via
 # things like setuid and file capabilities
@@ -20,29 +37,9 @@ NoNewPrivileges=true
 AddCapability=CAP_CHOWN
 AddCapability=CAP_DAC_OVERRIDE
 AddCapability=CAP_DAC_READ_SEARCH
-AddCapability=CAP_FOWNER
 AddCapability=CAP_KILL
 AddCapability=CAP_SETGID
 AddCapability=CAP_SETUID
 
-# Mount volumes to persist data
-Mount=type=volume,src=gitolite-keys,dst=/etc/ssh/keypair.d,rw=true
-Mount=type=volume,src=gitolite-home,dst=/var/lib/git,rw=true
-
-# Expose ports to access
-PublishPort=8022:8022/tcp
-PublishPort=9418:9418/tcp
-
-# Target repo and tag
-Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
-
-# If you podman too old (less 4.6), the keys EnvironmentFile and Mount will be
-# no effect, please uncomment following lines and review supported cases in
-# quadlet docs https://github.com/containers/quadlet/blob/main/docs/Fileformat.md#container-files
-#
-#Environment="ADMIN_KEY=<SSH PUBLIC KEY>"
-#Volume=gitolite-home.volume:/var/lib/git/:rw
-#Volume=gitolite-keys.volume:/etc/ssh/keypair.d/:rw
-
 [Install]
-WantedBy=multi-user.target default.target
+WantedBy=default.target
