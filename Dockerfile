@@ -79,13 +79,15 @@ RUN set -eux; \
     \
     rm -rf /var/cache/apk/* /tmp/*;
 
-# Setup alias and user isolate
+# Enhanced security and convenience
 RUN set -eux; \
     \
     perl -i -pe 's/^(Subsystem\ssftp\s)/#\1/' /etc/ssh/sshd_config; \
     \
-    ln -s /usr/local/lib/gitolite3/gitolite /usr/local/bin/gitolite; \
-    \
+    ln -s /usr/local/lib/gitolite3/gitolite /usr/local/bin/gitolite;
+
+# Setup user and group
+RUN set -eux; \
     addgroup \
         --gid ${GIT_GID} \
         git; \
