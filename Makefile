@@ -2,7 +2,7 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-src := $(shell find etc -type f -path 'etc/*') entrypoint.sh Dockerfile
+src := $(shell find etc -type f -path 'etc/*') entrypoint.sh gl-export.sh gl-import.sh Dockerfile
 
 rev := $(shell git show --no-patch --date=format:%Y%m%d --pretty=format:%cd.%h $$(git rev-parse HEAD))
 tag := iolet/gitolite:$(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)-rev$(rev)
