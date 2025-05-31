@@ -103,7 +103,7 @@ RUN set -eux; \
 
 # Copy configure and entrypoint files
 COPY etc/ /etc/
-COPY entrypoint.sh /usr/local/bin/
+COPY entrypoint.sh gl-export.sh gl-import.sh /usr/local/bin/
 
 # Volume used to store SSH host key, generated on first run
 VOLUME /etc/ssh/keypair.d
