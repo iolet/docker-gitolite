@@ -14,7 +14,7 @@ repoprefix=${2?"repoprefix is required"}
 
 startin=$(pwd)
 
-reponame=$(basename "$bundlefile" | awk -F '_' '{print $1}' | sed 's!.!/!g')
+reponame=$(basename "$bundlefile" | awk -F '_' '{print $1}' | sed 's!\.!/!g')
 echo "-> import ${reponame}.git..."
 
 echo "+ create and enter working directory..."
