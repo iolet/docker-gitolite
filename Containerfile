@@ -51,6 +51,12 @@ RUN set -eux; \
     cp gosu /usr/local/bin/; \
     chmod +x /usr/local/bin/gosu;
 
+# Disable gitweb and Enable cgit by default
+RUN set -eux; \
+    \
+    sed -i "s/'gitweb'/# 'gitweb'/g" /usr/local/lib/gitolite3/lib/Gitolite/Rc.pm; \
+    sed -i "s/# 'cgit'/'cgit'/g" /usr/local/lib/gitolite3/lib/Gitolite/Rc.pm;
+
 FROM docker.io/library/alpine:${ALPINE_VER}
 
 # Inherited previous stage arg variable value
