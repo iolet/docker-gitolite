@@ -34,22 +34,6 @@ Quick setup
 How to build image
 -------------------
 
-first create .env file
-
-.. code:: bash
-
-   cp .env.example .env
-
-then fill content in `.env`, for example
-
-.. code:: env
-
-   ALPINE_VER=3.20.6
-   GITOLITE_TAG=3.6.13
-   GOSU_TAG=1.17
-
-last run make command build image.
-
 .. code:: bash
 
    make tarball
