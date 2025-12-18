@@ -2,8 +2,8 @@
 ALPINE_VER := $(shell grep -v '#' argfile.conf | grep ALPINE_VER | tail -n 1 | awk -F '=' '{print $$2}')
 GITOLITE_TAG := $(shell grep -v '#' argfile.conf | grep GITOLITE_TAG | tail -n 1 | awk -F '=' '{print $$2}')
 
-rev := $(shell git show --no-patch --date=format:%Y%m%d --pretty=format:%cd.%h HEAD)
-tag := $(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)-$(rev)
+rev := $(shell git show --no-patch --date=format:%y%m%d --pretty=format:%cd.%h HEAD)
+tag := $(subst v,,$(GITOLITE_TAG))-alpine$(ALPINE_VER)-rev$(rev)
 img := iolet/gitolite:$(tag)
 
 src := $(shell find etc -type f -path 'etc/*') argfile.conf entrypoint.sh gl-export.sh gl-import.sh Containerfile
@@ -21,7 +21,7 @@ $(dst): $(src)
             --annotation org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
             --tag $(img) \
             .
-	podman save --format oci-archive $(img) | zstd - > $(dst)
+	podman save $(img) | zstd - > $(dst)
 
 .PHONY: clean
 clean:
