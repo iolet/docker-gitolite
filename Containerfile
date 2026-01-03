@@ -4,6 +4,7 @@ FROM docker.io/library/alpine:${ALPINE_VER} as builder
 
 # Maybe we want mirror for package
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
+ARG GH_ENDPOINT=https://github.com
 
 # For source tag
 ARG GITOLITE_TAG
@@ -24,7 +25,7 @@ RUN set -eux; \
     TARGET_BRANCH="v${GITOLITE_TAG##*v}"; \
     \
     git clone --branch "${TARGET_BRANCH}" --depth 1 --single-branch \
-        https://github.com/sitaramc/gitolite.git /tmp/gitolite; \
+        $GH_ENDPOINT/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
     \
@@ -42,8 +43,8 @@ RUN set -eux; \
         TARGET_ARCH=arm64; \
     fi; \
     \
-    curl --progress-bar --location --output gosu https://github.com/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}; \
-    curl --progress-bar --location --output gosu.asc https://github.com/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}.asc; \
+    curl --progress-bar --location --output gosu $GH_ENDPOINT/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}; \
+    curl --progress-bar --location --output gosu.asc $GH_ENDPOINT/tianon/gosu/releases/download/${GOSU_TAG}/gosu-${TARGET_ARCH}.asc; \
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify gosu.asc gosu; \
