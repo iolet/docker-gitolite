@@ -9,6 +9,9 @@ Image=localhost/iolet/gitolite:3.6.13-alpine3.20.3
 # Expose ports to access
 PublishPort=8022:8022/tcp
 
+# Setup hostname for more verbose
+HostName=git.example.com
+
 # Pass admin public key in env file (make sure read only by owner)
 EnvironmentFile=$HOME/.ssh/gitolite.env
 
