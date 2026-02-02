@@ -4,6 +4,7 @@ FROM docker.io/library/alpine:${ALPINE_VER} as builder
 
 # Maybe we want mirror for package
 ARG APK_MIRROR=https://dl-cdn.alpinelinux.org
+ARG CB_ENDPOINT=https://codeberg.org
 ARG GH_ENDPOINT=https://github.com
 
 # For source tag
@@ -25,7 +26,7 @@ RUN set -eux; \
     TARGET_BRANCH="v${GITOLITE_TAG##*v}"; \
     \
     git clone --branch "${TARGET_BRANCH}" --depth 1 --single-branch \
-        $GH_ENDPOINT/sitaramc/gitolite.git /tmp/gitolite; \
+        $CB_ENDPOINT/sitaramc/gitolite.git /tmp/gitolite; \
     \
     mkdir /usr/local/lib/gitolite3; \
     \
