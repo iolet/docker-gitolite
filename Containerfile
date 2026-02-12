@@ -113,17 +113,14 @@ RUN set -eux; \
 COPY etc/ /etc/
 COPY entrypoint.sh gl-export.sh gl-import.sh /usr/local/bin/
 
-# Volume used to store SSH host key, generated on first run
-VOLUME /etc/ssh/keypair.d
-
-# Volume used to store all Gitolite data (keys, config and repositories), initialized on first run
-VOLUME /var/lib/git
+# Store sshd keypair and gitolite repo
+VOLUME [ "/etc/ssh/keypair.d", "/var/lib/git" ]
 
 # Expose port to access SSH and git daemon
 EXPOSE 8022/tcp
 
-# Entrypoint responsible for SSH host keys generation, and Gitolite data initialization
-ENTRYPOINT ["entrypoint.sh"]
+# Entrypoint responsible for SSH host keys generation, and gitolite data initialization
+ENTRYPOINT [ "entrypoint.sh" ]
 
 # Run openssh server
-CMD ["/usr/sbin/sshd"]
+CMD [ "/usr/sbin/sshd" ]
