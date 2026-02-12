@@ -36,7 +36,7 @@ echo "${workdir}"
 cd "$workdir"
 
 echo "+ clone work tree..."
-fullname=$(printf '%s' "$reponame" | sed 's!/!.!g')
+fullname=$(printf '%s' "$reponame" | sed 's!/!--!g')
 git clone --bare "$repouri" "$fullname"
 cd "${fullname}"
 
