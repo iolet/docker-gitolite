@@ -2,36 +2,48 @@
 
 set -eu
 
-bundlefile=${1?"bundlefile is required"}
+bundle=${1?"bundle is required"}
+prefix=${2:-"ssh://git@localhost:8022/"}
 
-bundlefile=$(readlink -f "$bundlefile")
-if [ ! -f "${bundlefile}" ]; then
-    echo "bundle file ${bundlefile} does not exists, aborted"
+bundle=$(readlink -f "$bundle")
+if [ ! -f "${bundle}" ]; then
+    echo "bundle file ${bundle} does not exists, aborted"
     exit 2
 fi
 
-repoprefix=${2?"repoprefix is required"}
+if [ "expr '${prefix}' : '.*/$'" ]; then
+    prefix="${prefix%/}"
+fi
 
 startin=$(pwd)
 
-reponame=$(basename "$bundlefile" | awk -F '_' '{print $1}' | sed 's!--!/!g')
-echo "-> import ${reponame}.git..."
+echo "-> import ${bundle} ..."
+remote=$(
+    basename "$bundle" | sed 's!--!/!g' | \
+    awk -F '_' "{printf \"${prefix}%s.git\", \$1}" | \
+)
 
-echo "+ create and enter working directory..."
+echo "+ create working directory..."
 workdir=$(mktemp -d)
-echo "${workdir}"
+
+echo "+ enter working directory ${workdir}..."
 cd "$workdir"
 
-echo "+ clone work tree..."
-fullname=$(basename "$bundlefile" | awk -F '_' '{print $1}')
-git clone "$bundlefile" "$fullname"
-cd "${fullname}"
+echo "+ clone repo as bare..."
+reponame=$(basename "$bundle" | awk -F '_' '{print $1}')
+git clone --bare "$bundle" "$reponame"
 
-echo "+ mirror to remote..."
-git push --mirror "${repoprefix}/${reponame}"
+echo "+ entry bare repo..."
+cd "${reponame}"
+unset reponame
 
-echo "+ leave and clean working directory..."
+echo "+ push repo to remote..."
+git push --mirror "$remote"
+
+echo "+ leave working directory..."
 cd "$startin"
+
+echo "+ clean working directory ${workdir}..."
 rm -rf "$workdir"
 
-unset bundlefile repoprefix startin reponame workdir fullname
+unset bundle prefix startin remote workdir

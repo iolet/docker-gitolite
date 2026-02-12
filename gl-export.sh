@@ -3,7 +3,6 @@
 set -eu
 
 repouri=${1?"repouri is required"}
-
 savedir=${2?"savedir is required"}
 
 if [ "expr '${savedir}' : '.*/$'" ]; then
@@ -20,37 +19,41 @@ if [ ! -d "${savedir}" ]; then
     exit 2
 fi
 
-moment=$(date +%Y-%m-%dT%H%M%S%z)
+moment=$(date +%y%m%d%H%M%S --utc)
 startin=$(pwd)
 
+echo "-> export ${repouri} ..."
 reponame=$(
     printf '%s' "$repouri" | \
     sed -E 's!^\S+:([0-9]*/?|//[a-z0-9.-]*/)!!g' | \
-    sed -E 's!\.git$!!g'
+    sed -E 's!\.git$!!g' | sed 's!/!--!g'
 )
-echo "-> export ${reponame}.git..."
 
-echo "+ create and enter working directory..."
 workdir=$(mktemp -d)
-echo "${workdir}"
+echo "+ create working directory ${workdir}..."
+
+echo "+ enter working directory..."
 cd "$workdir"
 
-echo "+ clone work tree..."
-fullname=$(printf '%s' "$reponame" | sed 's!/!--!g')
-git clone --bare "$repouri" "$fullname"
-cd "${fullname}"
+echo "+ clone repo as bare..."
+git clone --bare "$repouri" "$reponame"
 
-echo "+ package as bundle..."
-git bundle create "${fullname}_all.bundle" --all
+echo "+ entry bare repo..."
+cd "${reponame}"
+
+echo "+ package bundle..."
+git bundle create "${reponame}_all.bundle" --all
 
 echo "+ verify bundle..."
-git bundle verify "${fullname}_all.bundle"
+git bundle verify "${reponame}_all.bundle"
 
 echo "+ output bundle..."
-cp "${fullname}_all.bundle" "${savedir}/${fullname}_all_${moment}.bundle"
+cp "${reponame}_all.bundle" "${savedir}/${reponame}_all_${moment}.bundle"
 
-echo "+ leave and clean working directory..."
+echo "+ leave working directory..."
 cd "$startin"
+
+echo "+ clean working directory ${workdir}..."
 rm -rf "$workdir"
 
-unset repouri savedir moment startin reponame workdir fullname
+unset repouri savedir moment startin reponame workdir
